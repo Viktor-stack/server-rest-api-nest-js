@@ -11,8 +11,8 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() body): string {
-    return 'Привет Витя!!';
+  async login(@Body() body, @Res() res: Response) {
+    return await this.authService.login(body, res);
   }
 
   @Post('register')
@@ -20,10 +20,14 @@ export class AuthController {
     return await this.authService.register(authUserDto);
   }
 
+  @Patch('update/:id')
+  updateToken(@Param('id') id, @Body('token') token: string) {
+    return this.authService.updateToken(token, id);
+  }
 
   @Patch('user/:id/edit')
   updateRole(@Param('id') id, @Body() userDto) {
-    return this.authService.updateRole(userDto.id, id)
+    return this.authService.updateRole(userDto.id, id);
   }
 
 
