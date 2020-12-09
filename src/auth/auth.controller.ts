@@ -1,10 +1,23 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Res,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthUserDto } from './dto/auth-user.dto';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { User } from '../entity/user.entity';
+import { JwtAuthGuard } from './ jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
-@Controller('api/auth')
+@Controller('auth')
 export class AuthController {
 
   constructor(private readonly authService: AuthService) {
@@ -16,8 +29,19 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() authUserDto: AuthUserDto): Promise<{ message: string } | User> {
-    return await this.authService.register(authUserDto);
+  @UseInterceptors(FileInterceptor('avatarName', {
+    storage: diskStorage({
+      destination: './uploads'
+      , filename: (req, file, cb) => {
+        let date: string = new Date().toISOString();
+        let dateArr = date.split(':');
+        date = dateArr.join('-');
+        cb(null, `${date}-${file.originalname}`);
+      },
+    }),
+  }))
+  async register(@Body() authUserDto: AuthUserDto, @Res() res: Response, @UploadedFile() file): Promise<Response<any>> {
+    return await this.authService.register(authUserDto, res, file);
   }
 
   @Patch('update/:id')
@@ -25,19 +49,33 @@ export class AuthController {
     return this.authService.updateToken(token, id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('user/:id/edit')
   updateRole(@Param('id') id, @Body() userDto) {
     return this.authService.updateRole(userDto.id, id);
   }
 
-
-  @Get('users')
-  async getUserAll() {
-    return await this.authService.getAllUser();
+  @UseGuards(JwtAuthGuard)
+  @Patch('user/:id/update')
+  updateUser(@Param('id') id, @Body() userDto: AuthUserDto, @Res() res: Response) {
+    return this.authService.updateUser(id, userDto, res);
   }
 
+  // @UseGuards(JwtAuthGuard)
+  @Get('users')
+  async getUserAll(@Res() res: Response) {
+    return await this.authService.getAllUser(res);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('user/:id')
   getByIdUser(@Param('id') id) {
     return this.authService.getByIdUser(id);
+  }
+
+
+  @Get('profile')
+  getProfile(@Res() res: Response) {
+    return this.authService.getAllUser(res);
   }
 }

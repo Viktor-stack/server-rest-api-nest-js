@@ -1,15 +1,16 @@
 import {
-  Column,
+  Column, CreateDateColumn,
   Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
+  ManyToOne, ObjectIdColumn,
+  PrimaryGeneratedColumn, UpdateDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+
+  @PrimaryGeneratedColumn('uuid')
+  _id: string;
 
   @Column({ unique: true })
   email: string;
@@ -24,8 +25,17 @@ export class User {
   token: string;
 
   @Column({ default: '' })
-  avatarSrc: string;
+  avatarName: string;
 
-  @ManyToOne(() => Role, role => role.roles)
-  roles: Role;
+  @Column({ default: 0 })
+  userPrice: number;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createDate: Date;
+
+  @UpdateDateColumn()
+  updateDate: Date;
+
+  @ManyToOne(() => Role, role => role.roleID)
+  roleID: Role;
 }
