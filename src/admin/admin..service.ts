@@ -26,7 +26,6 @@ export class AdminService {
 
   async updateRole(id: string, role: RoleUserDto) {
     const user = await this.userRepos.findOne(id, { relations: ['roleID'] });
-    debugger
     user.roleID = await this.roleRepos.findOne(role.roleID);
     return this.userRepos.save(user);
   }

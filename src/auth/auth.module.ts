@@ -8,10 +8,11 @@ import { Role } from '../entity/role.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { MulterModule } from '@nestjs/platform-express';
+import { Country } from '../entity/country.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role]),
+    TypeOrmModule.forFeature([User, Role, Country]),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: 60 * 60 },

@@ -1,10 +1,11 @@
 import {
   Column, CreateDateColumn,
   Entity,
-  ManyToOne, ObjectIdColumn,
+  ManyToOne,
   PrimaryGeneratedColumn, UpdateDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
+import { Country } from './country.entity';
 
 @Entity()
 export class User {
@@ -19,7 +20,28 @@ export class User {
   password: string;
 
   @Column({ default: 'User' })
-  userName: string;
+  firstName: string;
+
+  @Column({ default: '' })
+  lastName: string;
+
+  @Column({ default: '' })
+  companyName: string;
+
+  @Column({ default: '' })
+  addressLine1: string;
+
+  @Column({ default: '' })
+  addressLine2: string;
+
+  @Column({ default: '' })
+  city: string;
+
+  @Column({ default: '' })
+  region: string;
+
+  @Column({ default: '' })
+  postalCode: string;
 
   @Column({ default: null })
   token: string;
@@ -38,4 +60,7 @@ export class User {
 
   @ManyToOne(() => Role, role => role.roleID)
   roleID: Role;
+
+  @ManyToOne(() => Country, cont => cont.countryID)
+  countryID: Country;
 }

@@ -3,7 +3,8 @@ export class AuthUserDto {
   readonly email: string;
   readonly password: string;
   readonly token: string;
-  readonly userName: string;
+  readonly firstName: string;
+  readonly lastName: string;
   readonly avatarName: string;
   readonly role_id: string;
 }
